@@ -1,0 +1,67 @@
+name: polar_scoop
+description: Polar Scoop Driver Assistant — delivery management PoC.
+publish_to: "none"
+version: 1.0.0+1
+
+environment:
+  sdk: ">=3.3.0 <4.0.0"
+
+# ─────────────────────────────────────────────
+#  RUNTIME DEPENDENCIES
+#  These are compiled into your final app.
+# ─────────────────────────────────────────────
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # --- State Management ---
+  # Core Riverpod package for Flutter.
+  flutter_riverpod: ^3.1.0
+
+  # Enables annotation-based provider syntax (@riverpod).
+  # Cleaner than writing provider boilerplate by hand.
+
+  # --- Database ---
+  # Type-safe, reactive SQLite ORM. Our data layer.
+  drift: ^2.18.0
+
+  # Provides the Flutter-specific SQLite storage backend for Drift.
+  drift_flutter: ^0.2.1
+
+  # Bundles the SQLite native binary with the app.
+  # Ensures a consistent SQLite version across all Android devices.
+  sqlite3_flutter_libs: ^0.5.24
+
+  # --- Navigation ---
+  # Flutter's officially supported declarative router.
+  go_router: ^17.2.0
+
+  # --- Utilities ---
+  # Date/time formatting — used for the delivery list header.
+  intl: ^0.20.2
+
+# ─────────────────────────────────────────────
+#  DEV DEPENDENCIES
+#  Build-time only. Never compiled into the app.
+# ─────────────────────────────────────────────
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+
+  # Code generation engine. Reads annotations and writes .g.dart files.
+  build_runner: ^2.4.11
+
+  # Drift-specific generator plugin for build_runner.
+  # Reads your table definitions → generates query companions + data classes.
+  drift_dev: ^2.18.0
+
+  # Riverpod-specific generator plugin for build_runner.
+  # Reads @riverpod annotations → generates provider objects.
+
+  # Riverpod-aware lint rules — warns you when you misuse providers.
+
+  # Standard Flutter lints.
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
