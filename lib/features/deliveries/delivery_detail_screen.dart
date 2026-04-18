@@ -33,7 +33,7 @@ class DeliveryDetailScreen extends ConsumerWidget {
               Container(
                 width: double.infinity,
                 padding: const EdgeInsets.all(20),
-                color: Colors.blueGrey[50],
+                color: Theme.of(context).colorScheme.surfaceContainerHighest,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -93,19 +93,19 @@ class DeliveryDetailScreen extends ConsumerWidget {
           children: [
             Expanded(
               child: OutlinedButton(
-                onPressed: () => _handleUpdate(context, ref, isSuccess: false),
+                onPressed: () => _showFailureReasonSheet(context, ref),
                 style: OutlinedButton.styleFrom(
-                  side: const BorderSide(color: Colors.red),
+                  backgroundColor: Colors.red,
+                  side: const BorderSide(color: Colors.redAccent, width: 2),
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
-                    //TODO: check for the box border and increase size
                   ),
                 ),
                 child: const Text(
                   'FAILED',
                   style: TextStyle(
-                    color: Colors.red,
+                    color: Colors.white,
                     fontWeight: FontWeight.bold,
                   ),
                 ),
@@ -116,7 +116,7 @@ class DeliveryDetailScreen extends ConsumerWidget {
               child: ElevatedButton(
                 onPressed: () => _handleUpdate(context, ref, isSuccess: true),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.green,
+                  backgroundColor: Colors.green.shade600,
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
@@ -140,18 +140,95 @@ class DeliveryDetailScreen extends ConsumerWidget {
   }
 
   void _handleUpdate(BuildContext context, WidgetRef ref,
-      {required bool isSuccess}) async {
+      {required bool isSuccess, String? reason}) async {
     // Using ref.read for the action service as defined in your SECTION 5
     final service = ref.read(deliveryActionsProvider);
 
     if (isSuccess) {
       await service.markDelivered(deliveryId);
     } else {
-      await service.markFailed(deliveryId, reason: "Store Closed");
+      await service.markFailed(deliveryId,
+          reason: reason ?? "No reason provided");
     }
 
     if (context.mounted) {
       context.pop(); // Returns to the list screen
     }
+  }
+
+  void _showFailureReasonSheet(BuildContext context, WidgetRef ref) {
+    // A comprehensive list of common logistics failure reasons
+    final reasons = [
+      'Store Closed / Not Open',
+      'Damaged Goods',
+      'Refused Delivery',
+      'Wrong Address',
+      'Recipient Unavailable',
+      'Other'
+    ];
+
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true, // Allows the sheet to size itself properly
+      backgroundColor: isDark ? Colors.grey.shade900 : Colors.white,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
+      ),
+      builder: (context) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 20),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                // Modern drag handle indicator
+                Container(
+                  width: 40,
+                  height: 4,
+                  margin: const EdgeInsets.only(bottom: 20),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.grey.shade700 : Colors.grey.shade300,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const Text(
+                  'Select Failure Reason',
+                  style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                ),
+                const SizedBox(height: 16),
+                // Generate the list of selectable reasons
+                ...reasons.map((reason) => ListTile(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 4),
+                      leading: Container(
+                        padding: const EdgeInsets.all(8),
+                        decoration: BoxDecoration(
+                          color: Colors.red.withOpacity(0.1),
+                          shape: BoxShape.circle,
+                        ),
+                        child: const Icon(Icons.warning_amber_rounded,
+                            color: Colors.redAccent, size: 20),
+                      ),
+                      title: Text(reason,
+                          style: const TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.w500)),
+                      trailing: const Icon(Icons.chevron_right_rounded,
+                          color: Colors.grey),
+                      onTap: () {
+                        // 1. Close the bottom sheet
+                        Navigator.pop(context);
+                        // 2. Execute the database update with the selected reason
+                        _handleUpdate(context, ref,
+                            isSuccess: false, reason: reason);
+                      },
+                    )),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }
