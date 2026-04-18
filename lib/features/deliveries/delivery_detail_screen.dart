@@ -13,11 +13,15 @@ class DeliveryDetailScreen extends ConsumerWidget {
     // Feature 3 & 4: Watching the two specific family providers
     final deliveryAsync = ref.watch(deliveryByIdProvider(deliveryId));
     final itemsAsync = ref.watch(orderItemsProvider(deliveryId));
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
       appBar: AppBar(
         title: const Text('Delivery Details'),
-        backgroundColor: Colors.blueAccent,
+        centerTitle: true,
+        elevation: 2,
+        backgroundColor: Theme.of(context).colorScheme.primaryContainer,
+        foregroundColor: Theme.of(context).colorScheme.onPrimaryContainer,
       ),
       body: deliveryAsync.when(
         loading: () => const Center(child: CircularProgressIndicator()),
@@ -76,7 +80,7 @@ class DeliveryDetailScreen extends ConsumerWidget {
       bottomNavigationBar: Container(
         padding: const EdgeInsets.all(24),
         decoration: BoxDecoration(
-          color: Colors.white,
+          color: Theme.of(context).colorScheme.primaryContainer,
           boxShadow: [
             BoxShadow(
               color: Colors.black.withValues(alpha: 0.05),
@@ -95,6 +99,7 @@ class DeliveryDetailScreen extends ConsumerWidget {
                   padding: const EdgeInsets.symmetric(vertical: 20),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(16),
+                    //TODO: check for the box border and increase size
                   ),
                 ),
                 child: const Text(

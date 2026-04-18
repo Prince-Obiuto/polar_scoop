@@ -14,6 +14,7 @@ class LoginScreen extends ConsumerStatefulWidget {
 class _LoginScreenState extends ConsumerState<LoginScreen> {
   final _driverIdController = TextEditingController();
   final _passwordController = TextEditingController();
+  late final isDark = Theme.of(context).brightness == Brightness.dark;
   bool _isLoading = false;
 
   @override
@@ -113,7 +114,7 @@ class _LoginScreenState extends ConsumerState<LoginScreen> {
 
   Future<void> _handleLogin() async {
     setState(() => _isLoading = true);
-    final success = await ref.read(authProvider.notifier).login(
+    final success = ref.read(authProvider.notifier).login(
           _driverIdController.text.trim(),
           _passwordController.text.trim(),
         );
